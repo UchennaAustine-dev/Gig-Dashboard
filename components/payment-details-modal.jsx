@@ -1,111 +1,153 @@
-export function PaymentDetailsModal({ payment, isOpen, onClose }) {
-    if (!isOpen) return null;
-  
-    return (
-      <>
-        <div className="modal fade show d-block" tabIndex="-1">
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content">
-              <div className="modal-header border-0">
-                <button 
-                  type="button" 
-                  className="btn-close" 
-                  onClick={onClose}
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div className="modal-body p-4">
-                <div className="container-fluid">
-                  <div className="row g-4">
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">Transaction ID</label>
-                        <div className="h5">{payment.transactionNumber}</div>
+import React, { useEffect } from 'react';
+import { X, FileText, AlertCircle } from 'lucide-react';
+import paystackLogo from "@/public/images/paystack-logo-vector.png"
+import Image from 'next/image';
+
+const PaymentDetailsModal = ({ payment, isOpen, onClose }) => {
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  // Handle escape key press
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
+  if (!payment) return null;
+
+  return (
+    <>
+      <div 
+        className={`modal fade ${isOpen ? 'show d-block' : ''}`} 
+        tabIndex="-1"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="modal-dialog modal-dialog-slideright modal-lg">
+          <div className="modal-content border-0 shadow-lg">
+            <div className="modal-header bg-light border-bottom-0 p-4">
+              <h5 className="modal-title fw-bold mb-0">Payment Details</h5>
+              <button 
+                type="button" 
+                className="btn-close shadow-none"
+                onClick={onClose}
+                aria-label="Close"
+              />
+            </div>
+
+            <div className="modal-body p-4">
+              <div className="container-fluid px-0">
+                <div className="row g-4">
+                  <div className="col-12">
+                    <div className="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                      <FileText className="text-primary" size={24} />
+                      <div>
+                        <div className="text-muted small">Transaction ID</div>
+                        <div className="fw-bold">{payment.transactionNumber}</div>
                       </div>
                     </div>
-                    
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">Customer's name</label>
-                        <input 
-                          type="text" 
-                          className="form-control" 
-                          value={payment.customerName} 
-                          readOnly 
-                        />
-                      </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-floating">
+                      <input 
+                        type="text" 
+                        className="form-control bg-light"
+                        id="customerName"
+                        value={payment.customerName} 
+                        readOnly 
+                      />
+                      <label htmlFor="customerName">Customer's Name</label>
                     </div>
-  
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">Customer's Email</label>
-                        <input 
-                          type="email" 
-                          className="form-control" 
-                          value={payment.email} 
-                          readOnly 
-                        />
-                      </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-floating">
+                      <input 
+                        type="email" 
+                        className="form-control bg-light"
+                        id="customerEmail"
+                        value={payment.email} 
+                        readOnly 
+                      />
+                      <label htmlFor="customerEmail">Email Address</label>
                     </div>
-  
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">Phone number</label>
-                        <input 
-                          type="tel" 
-                          className="form-control" 
-                          value={payment.phoneNumber} 
-                          readOnly 
-                        />
-                      </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-floating">
+                      <input 
+                        type="tel" 
+                        className="form-control bg-light"
+                        id="phoneNumber"
+                        value={payment.phoneNumber} 
+                        readOnly 
+                      />
+                      <label htmlFor="phoneNumber">Phone Number</label>
                     </div>
-  
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">Payment Status</label>
-                        <select className="form-select" value={payment.status}>
-                          <option value="New">New</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Out for Delivery">Out for Delivery</option>
-                          <option value="Delivered">Delivered</option>
-                        </select>
-                      </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-floating">
+                      <input 
+                        type="text" 
+                        className="form-control bg-light"
+                        id="amountPaid"
+                        value={payment.amountPaid} 
+                        readOnly 
+                      />
+                      <label htmlFor="amountPaid">Amount Paid</label>
                     </div>
-  
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">Amount paid</label>
-                        <input 
-                          type="text" 
-                          className="form-control" 
-                          value={payment.amountPaid} 
-                          readOnly 
-                        />
-                      </div>
+                  </div>
+
+                  <div className="col-12">
+                    <div className="form-floating">
+                      <select 
+                        className="form-select"
+                        id="paymentStatus"
+                        value={payment.status}
+                      >
+                        <option value="New">New</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Out for Delivery">Out for Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                      </select>
+                      <label htmlFor="paymentStatus">Payment Status</label>
                     </div>
-  
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label className="form-label text-muted">View Receipt</label>
-                        <div className="card">
-                          <div className="card-body text-center p-4">
-                            <img 
-                              src="/placeholder.svg" 
-                              alt="Payment Logo" 
-                              className="mb-4" 
-                              style={{ width: '48px', height: '48px' }} 
-                            />
-                            <p className="text-muted mb-2">Hi there, {payment.customerName} sent you</p>
-                            <p className="text-muted mb-2">a payment request for</p>
-                            <h3 className="mb-4">{payment.amountPaid}</h3>
-                            <p className="text-muted small mb-2">NOTE FROM SENDER</p>
-                            <p className="mb-4">For mangoes</p>
-                            <button className="btn btn-success w-100 mb-3">Pay Now</button>
-                            <p className="text-muted small mb-0">
-                              To pay offline, use this reference
-                              <br />
-                              {payment.transactionNumber}
-                            </p>
+                  </div>
+
+                  <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                      <div className="card-body p-4">
+                        <div className="text-center">
+                          <Image 
+                            src={paystackLogo}
+                            alt="Payment Logo" 
+                            className="mb-4" 
+                            height={110}
+                            width={200}
+                          />
+                          <p className="text-muted mb-2">Payment Receipt for {payment.customerName}</p>
+                          <h3 className="mb-4">{payment.amountPaid}</h3>
+                          <div className="d-grid gap-2">
+                            <button className="btn btn-primary">
+                              Download Receipt
+                            </button>
+                            <button className="btn btn-outline-secondary">
+                              Print Receipt
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -116,9 +158,13 @@ export function PaymentDetailsModal({ payment, isOpen, onClose }) {
             </div>
           </div>
         </div>
-        <div className="modal-backdrop fade show"></div>
-      </>
-    );
-  }
-  
-  
+      </div>
+      <div 
+        className={`modal-backdrop fade ${isOpen ? 'show' : ''}`}
+        onClick={onClose}
+      />
+    </>
+  );
+};
+
+export default PaymentDetailsModal;
